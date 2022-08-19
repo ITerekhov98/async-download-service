@@ -22,8 +22,7 @@ async def handle_index_page(request):
     return web.Response(text=index_contents, content_type='text/html')
 
 
-async def initialize_archiving(request, photos_dir_path):
-    archive_hash = request.match_info.get('archive_hash')
+async def initialize_archiving(archive_hash, photos_dir_path):
     archive_path = os.path.join(photos_dir_path, archive_hash)
     if not os.path.exists(archive_path):
         raise web.HTTPNotFound(text='Архив не существует или был удален')
@@ -42,8 +41,12 @@ async def recieve_arhcive(
         response_delay,
         photos_dir_path,
         outgoing_archive_name):
-
-    process = await initialize_archiving(request, photos_dir_path)
+        
+    archive_hash = request.match_info.get('archive_hash')
+    if not archive_hash:
+        raise web.HTTPNotFound(text='Архив не существует или был удален')
+        
+    process = await initialize_archiving(archive_hash, photos_dir_path)
 
     response = web.StreamResponse()
     response.headers['Content-Type'] = 'text/html'
