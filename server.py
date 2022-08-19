@@ -42,10 +42,7 @@ async def recieve_arhcive(
         photos_dir_path,
         outgoing_archive_name):
         
-    archive_hash = request.match_info.get('archive_hash')
-    if not archive_hash:
-        raise web.HTTPNotFound(text='Архив не существует или был удален')
-        
+    archive_hash = request.match_info['archive_hash']
     process = await initialize_archiving(archive_hash, photos_dir_path)
 
     response = web.StreamResponse()
